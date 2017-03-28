@@ -1,15 +1,20 @@
 package org.sam.extractor.Configuration;
 
 import com.github.junrar.extract.ExtractArchive;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -23,27 +28,63 @@ import java.util.stream.StreamSupport;
 
 @RestController
 @SpringBootApplication
+//@ConfigurationProperties
 public class ApplcationConfiguration {
 
+    @Value("#{'${paths}'.split(',')}")
+    private List<String> rootPaths;
+
+    static <T> Stream<T> toStream(Iterable<T> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(ApplcationConfiguration.class, args);
+    }
 
     @RequestMapping("/xxx")
     String home() {
         return "Hello World!";
     }
 
-
     @RequestMapping(value = "/files", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     List<String> files() throws IOException {
-        List<String> strings = Arrays.asList("L:\\","G:\\", "H:\\");
 
-        try (Stream<Path> stream = strings.stream().parallel().flatMap(this::getPathStream)) {
+        try (Stream<Path> stream = rootPaths.stream().parallel().flatMap(this::getPathStream)) {
             List<String> collect = stream.map(Path::toString).collect(Collectors.toList());
             return collect;
         }
 
     }
 
+    @RequestMapping(value = "/files2", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    List<String> files2() throws IOException {
+
+        try (Stream<Path> stream = rootPaths.stream().parallel().flatMap(this::getPathStream)) {
+            List<String> collect = stream.map(Path::toString).collect(Collectors.toList());
+            Map<String, Object> map = new HashMap<>();
+            collect.forEach(s -> {
+                getMap(map, s);
+                map.get()
+            });
+            return collect;
+        }
+
+
+    }
+
+    private void getMap(Map<String, Object> map, String s) {
+        String[] split = s.split(File.pathSeparator);
+        for (String node : split) {
+            get(map, node);
+        }
+    }
+
+    private Object get(Map<String, Object> map, String node) {
+        return map.putIfAbsent(node, new HashMap<>());
+    }
 
     private Stream<Path> getPathStream(String first) {
         try {
@@ -54,7 +95,6 @@ public class ApplcationConfiguration {
             return Stream.empty();
         }
     }
-
 
     @RequestMapping("/extract")
     public String extract(@RequestParam("file") String file) {
@@ -91,16 +131,6 @@ public class ApplcationConfiguration {
             return false;
         };
     }
-
-    static <T> Stream<T> toStream(Iterable<T> iterable) {
-        return StreamSupport.stream(iterable.spliterator(), false);
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(ApplcationConfiguration.class, args);
-    }
-
 
     static class FN<T extends Path> implements Function<T, Stream<T>> {
         @Override
