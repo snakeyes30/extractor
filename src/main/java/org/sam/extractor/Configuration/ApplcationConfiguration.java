@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,16 +65,26 @@ public class ApplcationConfiguration {
 
         try (Stream<Path> stream = rootPaths.stream().parallel().flatMap(this::getPathStream)) {
             List<String> collect = stream.map(Path::toString).collect(Collectors.toList());
-            Map<String, Object> map = new HashMap<>();
-            collect.forEach(s -> {
-                getMap(map, s);
-                map.get()
-            });
+            Map<String, List> map = new HashMap<>();
+            Node root = new Node("root");
+//            collect.forEach(getStringConsumer(map));
             return collect;
         }
 
 
     }
+
+//    private Consumer<String> getStringConsumer(Map<String, List> map) {
+//        return s -> {
+//            doStuff(map, s);
+//        };
+//    }
+//
+//    private void doStuff(Map<String, Map> map, String s) {
+//        String[] split = s.split(File.pathSeparator);
+//
+//
+//    }
 
     private void getMap(Map<String, Object> map, String s) {
         String[] split = s.split(File.pathSeparator);
@@ -146,5 +157,49 @@ public class ApplcationConfiguration {
             }
         }
 
+    }
+
+    private class Node {
+        private String name;
+        private List<Node> nodes = new ArrayList<>();
+
+        public Node(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List<Node> getNodes() {
+            return nodes;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Node node = (Node) o;
+
+            if (name != null ? !name.equals(node.name) : node.name != null) return false;
+            return nodes != null ? nodes.equals(node.nodes) : node.nodes == null;
+
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "name='" + name + '\'' +
+                    ", nodes=" + nodes +
+                    '}';
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name != null ? name.hashCode() : 0;
+            result = 31 * result + (nodes != null ? nodes.hashCode() : 0);
+            return result;
+        }
     }
 }
