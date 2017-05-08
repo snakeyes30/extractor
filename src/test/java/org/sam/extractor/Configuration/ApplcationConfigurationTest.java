@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static java.util.Collections.emptyList;
+
 /**
  * Created by RShastri on 5/5/2017.
  */
@@ -27,11 +29,12 @@ public class ApplcationConfigurationTest {
                     String[] split = s.split("\\\\");
 //                    for (int i = 0; i < split.length; i++) {
 //                        String sp = split[i];
-                        try {
-                            getList(map, 0, split);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        getList(map, 0, split);
+//                        getNode(new Node("Root", emptyList()), 0, split);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
 
 //                    }
                 }
@@ -42,6 +45,19 @@ public class ApplcationConfigurationTest {
 
         System.out.println(objectMapper.writeValueAsString(map));
 
+    }
+
+    private Node getNode(Node root, int i, String[] paths) {
+        String current = paths[i];
+
+        if (i >= paths.length) {
+            return new Node(current, emptyList());
+        }
+        Optional<Node> node = root.getChildren().stream().filter(n -> n.getName().equals(current)).findAny();
+        if (node.isPresent()) {
+
+        }
+        return null;
     }
 
     /**
@@ -68,9 +84,11 @@ public class ApplcationConfigurationTest {
         if (map.containsKey(nextSp)) {
             newMap = (Map) map.get(nextSp);
         }
+
         Map list = getList(newMap, sp + 1, next);
 
-            map.put(nextSp, list);
+        map.put(nextSp, list);
+        map.put("Name", nextSp);
 
 //        System.out.println(next[sp]);
 
