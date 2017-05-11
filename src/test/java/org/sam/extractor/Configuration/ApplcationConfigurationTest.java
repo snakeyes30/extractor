@@ -19,13 +19,13 @@ public class ApplcationConfigurationTest {
 
     @Test
     public void name() throws Exception {
-//        List<String> strings = Arrays.asList("C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E01.The.Good.Son.DVDRip.XviD-VF\\frasier.s01e01.dvdrip.xvid-vf.rar",
-//                "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E02.Space.Quest.DVDRip.XviD-VF\\frasier.s01e02.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E03.Dinner.At.Eight.DVDRip.XviD-VF\\frasier.s01e03.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E05.Heres.Looking.At.You.DVDRip.XviD-VF\\frasier.s01e05.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\frasier.s01e05.dvdrip.xvid-vf.rar");
+        List<String> strings = Arrays.asList("C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E01.The.Good.Son.DVDRip.XviD-VF\\frasier.s01e01.dvdrip.xvid-vf.rar",
+                "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E02.Space.Quest.DVDRip.XviD-VF\\frasier.s01e02.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E03.Dinner.At.Eight.DVDRip.XviD-VF\\frasier.s01e03.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E05.Heres.Looking.At.You.DVDRip.XviD-VF\\frasier.s01e05.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\frasier.s01e05.dvdrip.xvid-vf.rar");
 
 
-        List<String> strings = Arrays.asList("C:\\Users\\", "C:\\Users\\Cheese", "C:\\Users\\Cake");
+//        List<String> strings = Arrays.asList("C:\\Users\\", "C:\\Users\\Cheese", "C:\\Users\\Cake");
         Map<String, List> map = new HashMap<>();
-        Node node = new Node("Root", emptyList());
+        Node node = new Node("Root");
         strings.forEach(s -> {
                     String[] split = s.split("\\\\");
 //                    for (int i = 0; i < split.length; i++) {
@@ -51,7 +51,8 @@ public class ApplcationConfigurationTest {
     private Node getNode(Node root, int i, String[] paths) {
 
         if (i >= paths.length) {
-            return new Node("", emptyList());
+
+            return new Node("", emptyList(), "");
         }
 
         String current = paths[i];
@@ -60,7 +61,11 @@ public class ApplcationConfigurationTest {
         if (node.isPresent()) {
             getNode(node.get(), i + 1, paths);
         } else {
-            Node x = new Node(current, emptyList());
+            String action = "";
+            if(current.endsWith("rar")) {
+                action = String.join("\\", paths);
+            }
+            Node x = new Node(current, emptyList(),action);
             root.getChildren().add(x);
             Node newNode = getNode(x, i + 1, paths);
         }

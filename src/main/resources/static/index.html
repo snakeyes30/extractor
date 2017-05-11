@@ -4,19 +4,158 @@
     <title>zomg</title>
     <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="bower_components/paper-tree/paper-tree.html">
+    <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+
+    <link rel="stylesheet" type="text/css" href="foo.css">
+
 </head>
 <body>
 <!--<emoji-rain active></emoji-rain>-->
 <paper-tree id="tree1"></paper-tree>
+<div id="loader" class="loader hidden"></div>
+
 <script>
 
     var tree = document.querySelector('#tree1');
 
     // Only one node.
     tree.data = {
-        "name": "Hello"
+        "name": "Root",
+        "action": "extract",
+        "icon": null,
+        "children": [{
+            "name": "C:",
+            "action": "extract",
+            "icon": "",
+            "children": [{
+                "name": "Users",
+                "action": "extract",
+                "icon": "",
+                "children": [{
+                    "name": "rshastri",
+                    "action": "extract",
+                    "icon": "",
+                    "children": [{
+                        "name": "Desktop",
+                        "action": "extract",
+                        "icon": "",
+                        "children": [{
+                            "name": "Frasier.S01-S11.DVDRip.XviD-SCC",
+                            "action": "extract",
+                            "icon": "",
+                            "children": [{
+                                "name": "Frasier.S01.DVDRip.XviD-SCC",
+                                "action": "extract",
+                                "icon": "",
+                                "children": [{
+                                    "name": "Frasier.S01E01.The.Good.Son.DVDRip.XviD-VF",
+                                    "action": "extract",
+                                    "icon": "",
+                                    "children": [{
+                                        "name": "frasier.s01e01.dvdrip.xvid-vf.rar",
+                                        "action": "extract",
+                                        "icon": "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E01.The.Good.Son.DVDRip.XviD-VF\\frasier.s01e01.dvdrip.xvid-vf.rar",
+                                        "children": [],
+                                        "open": false
+                                    }],
+                                    "open": false
+                                }, {
+                                    "name": "Frasier.S01E02.Space.Quest.DVDRip.XviD-VF",
+                                    "action": "extract",
+                                    "icon": "",
+                                    "children": [{
+                                        "name": "frasier.s01e02.dvdrip.xvid-vf.rar",
+                                        "action": "extract",
+                                        "icon": "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E02.Space.Quest.DVDRip.XviD-VF\\frasier.s01e02.dvdrip.xvid-vf.rar",
+                                        "children": [],
+                                        "open": false
+                                    }],
+                                    "open": false
+                                }, {
+                                    "name": "Frasier.S01E03.Dinner.At.Eight.DVDRip.XviD-VF",
+                                    "action": "extract",
+                                    "icon": "",
+                                    "children": [{
+                                        "name": "frasier.s01e03.dvdrip.xvid-vf.rar",
+                                        "action": "extract",
+                                        "icon": "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E03.Dinner.At.Eight.DVDRip.XviD-VF\\frasier.s01e03.dvdrip.xvid-vf.rar",
+                                        "children": [],
+                                        "open": false
+                                    }],
+                                    "open": false
+                                }, {
+                                    "name": "Frasier.S01E05.Heres.Looking.At.You.DVDRip.XviD-VF",
+                                    "action": "extract",
+                                    "icon": "",
+                                    "children": [{
+                                        "name": "frasier.s01e05.dvdrip.xvid-vf.rar",
+                                        "action": "extract",
+                                        "icon": "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E05.Heres.Looking.At.You.DVDRip.XviD-VF\\frasier.s01e05.dvdrip.xvid-vf.rar",
+                                        "children": [],
+                                        "open": false
+                                    }],
+                                    "open": false
+                                }],
+                                "open": false
+                            }, {
+                                "name": "frasier.s01e05.dvdrip.xvid-vf.rar",
+                                "action": "extract",
+                                "icon": "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\frasier.s01e05.dvdrip.xvid-vf.rar",
+                                "children": [],
+                                "open": false
+                            }],
+                            "open": false
+                        }],
+                        "open": false
+                    }],
+                    "open": false
+                }],
+                "open": false
+            }],
+            "open": false
+        }],
+        "open": true
     };
 
+
+    // Adding one action.
+    tree.actions = [{
+        label: 'extract',
+        event: 'onshow'
+    }];
+
+    // Finally adding a listener for that action.
+    tree.addEventListener('onshow', function (event) {
+//        alert('This is ' + event.detail.data.name + "\n " + event.detail.data.icon);
+
+        var tree = document.querySelector('#tree1');
+        tree.className += " hidden";
+
+        document.getElementById("loader").classList.remove("hidden");
+
+
+        var t = document.querySelector('#t');
+        var ajaxRequest = t.$.dataAjax;
+        ajaxRequest.url = "/extract?file=" + event.detail.data.icon;
+        ajaxRequest.generateRequest();
+
+
+        //callback on request complete
+        t.getComplete = function () {
+            document.getElementById("loader").classList.add("hidden");
+            document.getElementById("tree1").classList.remove("hidden");
+        }
+    });
+
+
 </script>
+<template id="t" is="dom-bind">
+    <iron-ajax
+            id="dataAjax"
+            method="get"
+            url="data/url"
+            on-response="getComplete"></iron-ajax>
+</template>
+
 </body>
 </html>
