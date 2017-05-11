@@ -19,19 +19,20 @@ public class ApplcationConfigurationTest {
 
     @Test
     public void name() throws Exception {
-        List<String> strings = Arrays.asList("C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E01.The.Good.Son.DVDRip.XviD-VF\\frasier.s01e01.dvdrip.xvid-vf.rar",
-                "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E02.Space.Quest.DVDRip.XviD-VF\\frasier.s01e02.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E03.Dinner.At.Eight.DVDRip.XviD-VF\\frasier.s01e03.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E05.Heres.Looking.At.You.DVDRip.XviD-VF\\frasier.s01e05.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\frasier.s01e05.dvdrip.xvid-vf.rar");
+//        List<String> strings = Arrays.asList("C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E01.The.Good.Son.DVDRip.XviD-VF\\frasier.s01e01.dvdrip.xvid-vf.rar",
+//                "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E02.Space.Quest.DVDRip.XviD-VF\\frasier.s01e02.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E03.Dinner.At.Eight.DVDRip.XviD-VF\\frasier.s01e03.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\Frasier.S01.DVDRip.XviD-SCC\\Frasier.S01E05.Heres.Looking.At.You.DVDRip.XviD-VF\\frasier.s01e05.dvdrip.xvid-vf.rar", "C:\\Users\\rshastri\\Desktop\\Frasier.S01-S11.DVDRip.XviD-SCC\\frasier.s01e05.dvdrip.xvid-vf.rar");
 
 
-//        List<String> strings = Arrays.asList("C:\\Users\\", "C:\\Users\\Cheese", "C:\\Users\\Cake");
+        List<String> strings = Arrays.asList("C:\\Users\\", "C:\\Users\\Cheese", "C:\\Users\\Cake");
         Map<String, List> map = new HashMap<>();
+        Node node = new Node("Root", emptyList());
         strings.forEach(s -> {
                     String[] split = s.split("\\\\");
 //                    for (int i = 0; i < split.length; i++) {
 //                        String sp = split[i];
                     try {
                         getList(map, 0, split);
-//                        getNode(new Node("Root", emptyList()), 0, split);
+                        getNode(node, 0, split);
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -43,21 +44,30 @@ public class ApplcationConfigurationTest {
         objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        System.out.println(objectMapper.writeValueAsString(map));
+        System.out.println(objectMapper.writeValueAsString(node));
 
     }
 
     private Node getNode(Node root, int i, String[] paths) {
-        String current = paths[i];
 
         if (i >= paths.length) {
-            return new Node(current, emptyList());
+            return new Node("", emptyList());
         }
+
+        String current = paths[i];
+        System.out.println("Working on file part " + current);
         Optional<Node> node = root.getChildren().stream().filter(n -> n.getName().equals(current)).findAny();
         if (node.isPresent()) {
-
+            getNode(node.get(), i + 1, paths);
+        } else {
+            Node x = new Node(current, emptyList());
+            root.getChildren().add(x);
+            Node newNode = getNode(x, i + 1, paths);
         }
-        return null;
+
+        ;
+
+        return root;
     }
 
     /**
