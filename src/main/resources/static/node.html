@@ -111,13 +111,14 @@ Custom property | Description | Default
         <div class="node-container">
             <div class="node-row">
                 <span class$="{{_computeClass(data.*)}}" on-click="toggleChildren"></span>
-                <iron-icon class="node-icon" icon$="{{_computeIcon(data.icon)}}" on-click="select"></iron-icon>
+                <iron-icon class="node-icon" icon$="{{_computeIcon(data.icon)}}" on-click="toggleChildren"></iron-icon>
                 <template is="dom-if" if="{{data.icon}}">
                     <span class="node-name" on-click="_actionClicked">{{data.name}}</span>
 
                 </template>
                 <template is="dom-if" if="{{!data.icon}}">
                     <span class="node-name" on-click="toggleChildren">{{data.name}}</span>
+
                 </template>
 
             </div>
@@ -210,8 +211,8 @@ Custom property | Description | Default
             return icon ? icon : 'folder';
         },
 
-        _actionClicked: function (event) {
-            this.fire(event.model.item.event, this);
+        _actionClicked: function () {
+            this.fire("onshow", this);
         },
 
         /**
