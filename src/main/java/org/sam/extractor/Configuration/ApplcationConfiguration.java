@@ -12,16 +12,18 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Created by RShastri on 3/6/2017.
@@ -61,19 +63,49 @@ public class ApplcationConfiguration {
 
     @RequestMapping(value = "/files2", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    List<String> files2() throws IOException {
+    Node files2() throws IOException {
 
         try (Stream<Path> stream = rootPaths.stream().parallel().flatMap(this::getPathStream)) {
             List<String> collect = stream.map(Path::toString).collect(Collectors.toList());
-            Map<String, List> map = new HashMap<>();
-            Node root = new Node("root");
-//            collect.forEach(getStringConsumer(map));
-            return collect;
-        }
+            Node node = new Node("Root");
+            collect.forEach(s -> {
+                        String[] split = s.split("\\\\");
+                        getNode(node, 0, split);
 
+                    }
+            );
+            return node;
+        }
 
     }
 
+
+    private Node getNode(Node root, int i, String[] paths) {
+
+        if (i >= paths.length) {
+
+            return new Node("", emptyList(), "");
+        }
+
+        String current = paths[i];
+        System.out.println("Working on file part " + current);
+        Optional<Node> node = root.getChildren().stream().filter(n -> n.getName().equals(current)).findAny();
+        if (node.isPresent()) {
+            getNode(node.get(), i + 1, paths);
+        } else {
+            String action = "";
+            if (current.endsWith("rar")) {
+                action = String.join("\\", paths);
+            }
+            Node x = new Node(current, emptyList(), action);
+            root.getChildren().add(x);
+            Node newNode = getNode(x, i + 1, paths);
+        }
+
+        ;
+
+        return root;
+    }
 //    private Consumer<String> getStringConsumer(Map<String, List> map) {
 //        return s -> {
 //            doStuff(map, s);
@@ -159,47 +191,5 @@ public class ApplcationConfiguration {
 
     }
 
-    private class Node {
-        private String name;
-        private List<Node> nodes = new ArrayList<>();
 
-        public Node(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public List<Node> getNodes() {
-            return nodes;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Node node = (Node) o;
-
-            if (name != null ? !name.equals(node.name) : node.name != null) return false;
-            return nodes != null ? nodes.equals(node.nodes) : node.nodes == null;
-
-        }
-
-        @Override
-        public String toString() {
-            return "Node{" +
-                    "name='" + name + '\'' +
-                    ", nodes=" + nodes +
-                    '}';
-        }
-
-        @Override
-        public int hashCode() {
-            int result = name != null ? name.hashCode() : 0;
-            result = 31 * result + (nodes != null ? nodes.hashCode() : 0);
-            return result;
-        }
-    }
 }
