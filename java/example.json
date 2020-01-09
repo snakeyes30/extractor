@@ -1,0 +1,44 @@
+{
+  "name": "Media Center",
+  "icon": "weekend",
+  "open": true,
+  "children": [
+    {
+      "name": "Movies",
+      "icon": "av:movie",
+      "children": [
+        {
+          "name": "Interstellar",
+          "icon": "theaters"
+        },
+        {
+          "name": "The Godfather",
+          "icon": "theaters"
+        },
+        {
+          "name": "Pulp Fiction",
+          "icon": "theaters"
+        }
+      ]
+    },
+    {
+      "name": "TV Shows",
+      "icon": "notification:live-tv",
+      "children": [
+        {
+          "name": "Breaking Bad",
+          "icon": "theaters"
+        },
+        {
+          "name": "Game of Thrones",
+          "icon": "theaters"
+        }
+      ]
+    }
+  ]
+}
+actions='[{
+"label": "Play",
+"event": "play"
+}
+]'

@@ -1,0 +1,98 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>zomg</title>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="tree.html">
+    <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+
+    <link rel="stylesheet" type="text/css" href="foo.css">
+
+</head>
+<body>
+<!--<emoji-rain active></emoji-rain>-->
+<paper-tree id="tree1"></paper-tree>
+<div id="loader" class="loader hidden"></div>
+
+
+<template id="t2" is="dom-bind">
+
+    <iron-ajax
+            id="dataAjax2"
+            url="data.json"
+            last-response={{data}} on-response="getComplete"></iron-ajax>
+
+</template>
+
+
+<script>
+
+    var tree = document.querySelector('#tree1');
+    var t = document.querySelector('#t2');
+    t.addEventListener('dom-change', function () {
+        var ajaxRequest = t.$.dataAjax2;
+        ajaxRequest.url = "/files2";
+        ajaxRequest.generateRequest();
+        //callback on request complete
+        t.getComplete = function () {
+            tree.data = t.data;
+
+        }
+    });
+
+
+    //    tree.data = {
+    //        "name": "Root"
+    //    };
+
+
+    // Adding one action.
+    tree.actions = [{
+        label: 'extract',
+        event: 'onshow'
+    }];
+
+    // Finally adding a listener for that action.
+    tree.addEventListener('onshow', function (event) {
+//        alert('This is ' + event.detail.data.name + "\n " + event.detail.data.icon);
+
+        var tree = document.querySelector('#tree1');
+        tree.className += " hidden";
+
+        document.getElementById("loader").classList.remove("hidden");
+
+
+        var t = document.querySelector('#t');
+        var ajaxRequest = t.$.dataAjax;
+        ajaxRequest.url = "/extract?file=" + encodeURI(event.detail.data.icon);
+        ajaxRequest.generateRequest();
+
+
+        //callback on request complete
+        t.getComplete = function () {
+            var ajaxRequest = t.$.dataAjax;
+            ajaxRequest.url = "/files2";
+            ajaxRequest.generateRequest();
+            //callback on request complete
+            t.getComplete = function () {
+                tree.data = t.data;
+
+            }
+            document.getElementById("loader").classList.add("hidden");
+            document.getElementById("tree1").classList.remove("hidden");
+        }
+    });
+
+
+</script>
+<template id="t" is="dom-bind">
+    <iron-ajax
+            id="dataAjax"
+            method="get"
+            url="data/url"
+            last-response={{data}}
+            on-response="getComplete"></iron-ajax>
+</template>
+
+</body>
+</html>
