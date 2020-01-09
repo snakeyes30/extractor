@@ -1,9 +1,8 @@
-package org.sam.extractor.Configuration;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
+import org.sam.extractor.configuration.Node;
 
 import java.util.*;
 
@@ -25,7 +24,7 @@ public class ApplcationConfigurationTest {
 
 //        List<String> strings = Arrays.asList("C:\\Users\\", "C:\\Users\\Cheese", "C:\\Users\\Cake");
         Map<String, List> map = new HashMap<>();
-        Node node = new Node("Root");
+        Node node = new Node("Root", emptyList(), "");
         strings.forEach(s -> {
                     String[] split = s.split("\\\\");
 //                    for (int i = 0; i < split.length; i++) {
@@ -66,7 +65,7 @@ public class ApplcationConfigurationTest {
                 action = String.join("\\", paths);
             }
             Node x = new Node(current, emptyList(),action);
-            root.getChildren().add(x);
+//            root.getChildren().add(x);
             Node newNode = getNode(x, i + 1, paths);
         }
 
